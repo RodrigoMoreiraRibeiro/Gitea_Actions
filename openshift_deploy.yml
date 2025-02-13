@@ -144,7 +144,7 @@ jobs:
           EOF
 
           # Iniciar o build
-          # oc start-build ${{ env.APP_NAME }} -n ${{ env.OPENSHIFT_NAMESPACE }} --follow
+          oc start-build ${{ env.APP_NAME }} -n ${{ env.OPENSHIFT_NAMESPACE }} --follow
           
       - name: Deploy application
         run: |       
