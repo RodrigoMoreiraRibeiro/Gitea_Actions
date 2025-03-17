@@ -66,12 +66,6 @@ jobs:
           oc login --token=${{ secrets.OPENSHIFT_TOKEN }} --server=${{ secrets.OPENSHIFT_SERVER }} --insecure-skip-tls-verify=true
           oc project ${{ env.OPENSHIFT_NAMESPACE }}
 
-      - name: Create Service Account RoleBinding
-        run: |
-          # Criar a ServiceAccount caso não exista
-          oc create sa ${{ env.APP_NAME }} -n ${{ env.OPENSHIFT_NAMESPACE }}
-          # Neste caso um Cluster admin irá configurar o Service account criado com as devidas permissões, Existe cenarios que as aplicações apontaram para um unico rolebinding ou copiam as permissoes de um outro
-
       - name: Create namespace if not exists
         run: |
           if ! oc get namespace ${{ env.OPENSHIFT_NAMESPACE }} 2>/dev/null; then
@@ -79,6 +73,13 @@ jobs:
             oc project ${{ env.OPENSHIFT_NAMESPACE }}
             oc adm policy add-role-to-group admin OcpDevAdmin
           fi
+
+      - name: Create Service Account RoleBinding
+        run: |
+          # Criar a ServiceAccount caso não exista
+          oc create sa ${{ env.APP_NAME }} -n ${{ env.OPENSHIFT_NAMESPACE }}
+          # Neste caso um Cluster admin irá configurar o Service account criado com as devidas permissões, Existe cenarios que as aplicações apontaram para um unico rolebinding ou copiam as permissoes de um outro
+
       - name: Create ConfigMap
         run: |
           # Configurar Variaveis de ambiente.
@@ -92,7 +93,7 @@ jobs:
             DB_HOST: 0.0.0.0
             ENVIRONMENT: dev
             DB_USERNAME: username
-            DB_DATABASE: 
+            DB_DATABASE: banco
           EOF
 
       - name: Create BuildConfig, Secret and start build
